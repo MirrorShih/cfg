@@ -1,45 +1,37 @@
 window.onload = function () {
-  // load the binaries we have and make it a list
-  var hash_list = mockApi("GET", "/binary", "");
-  loadList(hash_list);
-
-  const fileInput = document.querySelector("#fileInput");
-  fileInput.addEventListener("change", (event) => {
-    uploadFile(event.target.files[0]);
-  });
+  // get hash list
+  var list;
+  fetch("/api/binary")
+    .then((response) => {
+      return response.json();
+    })
+    .then((response) => {
+      list = response;
+      console.log(response);
+    })
+    .catch((error) => console.error(error));
 };
 
-function mockApi(method, router, parameter) {
-  // upload binary then return hash
-  if (method == "POST" && router == "/binary") {
-    return { hash: "output_hash" }; // temperarily return a dot file name
-  }
-  // return hash list (all the binaries in the database)
-  else if (method == "GET" && router == "/binary" && parameter == "") {
-    return { hash_list: ["output_hash", "simple1_hash", "ais3_crackme_hash"] };
-  }
-}
+function uploadFile() {
+  var fileInput = document.getElementById("fileInput");
+  var file = fileInput.files[0];
 
-function uploadFile(file) {
-  console.log(file.name);
+  var formData = new FormData();
+  formData.append("file", file);
 
-  const form = new FormData();
-  form.append("file", file);
-
-  // upload to backend
-  /*fetch("/binary", {
+  fetch("/api/binary", {
     method: "POST",
-    body: form,
+    body: formData,
   })
-    .then((response) => response.json())
-    .then((data) => console.log(data))
-    .catch((error) => console.error(error));*/
-
-  // get hash to find the cfg_ids & function names
-  var hash = mockApi("POST", "/binary", "");
-
-  // redirect to cfg page and bring data along
-  window.location.href = "binary/" + hash['hash'];
+    .then((response) => {
+      return response.json();
+    })
+    .then((response) => {
+      // redirect to cfg page and bring data along
+      //window.location.href = "binary/" + response.hash;
+      console.log(response);
+    })
+    .catch((error) => console.error(error));
 }
 
 // load the binaries we have and make it a list

@@ -12,7 +12,19 @@ window.onload = function () {
   var hash = path[path.length - 1];
 
   // load the function list
-  var cfg_list = mockApi("GET", "/binary", hash);
+  var cfg_list;
+
+  fetch(`/binary/${hash}`)
+    .then((response) => {
+      return response.json();
+    })
+    .then((response) => {
+      console.log("/binary/:hash response");
+      console.log(response);
+      //cfg_list = response;
+    })
+    .catch((error) => console.error(error));
+
   loadList(cfg_list);
 
   refreshDot(cfg_list.function[0].cfg_id);
